@@ -1,0 +1,37 @@
+name: Self-test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create sample usage log
+        shell: bash
+        run: |
+          cat > usage.csv <<'EOF'
+          timestamp,model,input_tokens,output_tokens
+          2026-09-01T12:00:00Z,gpt-4.1-mini,1200,300
+          2026-09-02T12:00:00Z,gpt-4.1-mini,800,200
+          EOF
+      - name: Run action
+        uses: ./
+        with:
+          usage_csv: usage.csv
+          pricing_json: pricing.json
+          report: llm-audit-report.md
+      - name: Verify report
+        shell: bash
+        run: |
+          test -s llm-audit-report.md
+          grep -q "Estimated total cost" llm-audit-report.md
+          grep -q "gpt-4.1-mini" llm-audit-report.md
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: llm-audit-report
+          path: llm-audit-report.md
