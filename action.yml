@@ -1,0 +1,28 @@
+name: LLM Audit Report
+description: Generate a private, offline LLM usage and estimated cost report from CSV logs
+author: LLM Audit Kit
+inputs:
+  usage_csv:
+    description: Path to the LLM usage CSV
+    required: true
+  pricing_json:
+    description: Path to the local pricing JSON
+    required: false
+    default: pricing.json
+  report:
+    description: Output Markdown report path
+    required: false
+    default: llm-audit-report.md
+runs:
+  using: composite
+  steps:
+    - name: Generate audit report
+      shell: bash
+      run: |
+        python "${{ github.action_path }}/run.py" \
+          "${{ inputs.usage_csv }}" \
+          --pricing "${{ inputs.pricing_json }}" \
+          --report "${{ inputs.report }}"
+branding:
+  icon: bar-chart-2
+  color: blue
