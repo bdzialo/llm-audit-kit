@@ -1,0 +1,6 @@
+{
+  "gpt-4.1-mini": {
+    "input_per_1m": 0.40,
+    "output_per_1m": 1.60
+  }
+}
